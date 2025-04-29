@@ -27,13 +27,6 @@
                     </div>
                     {% with original_tweet=tweet.parent %}
                         <div class="media mb-2">
-                            <a href="{% url 'profile' original_tweet.user.username %}">
-                                {% if original_tweet.user.profile.profile_picture %}
-                                    <img src="{{ original_tweet.user.profile.profile_picture.url }}" class="rounded-circle mr-2" width="50" height="50" alt="{{ original_tweet.user.username }}">
-                                {% else %}
-                                    <img src="{% static 'img/default-profile.png' %}" class="rounded-circle mr-2" width="50" height="50" alt="{{ original_tweet.user.username }}">
-                                {% endif %}
-                            </a>
                             <div class="media-body">
                                 <h5 class="mt-0">
                                     <a href="{% url 'profile' original_tweet.user.username %}" class="text-dark text-decoration-none">
@@ -51,13 +44,6 @@
                     {% endwith %}
                 {% else %}
                     <div class="media mb-2">
-                        <a href="{% url 'profile' tweet.user.username %}">
-                            {% if tweet.user.profile.profile_picture %}
-                                <img src="{{ tweet.user.profile.profile_picture.url }}" class="rounded-circle mr-2" width="50" height="50" alt="{{ tweet.user.username }}">
-                            {% else %}
-                                <img src="{% static 'img/default-profile.png' %}" class="rounded-circle mr-2" width="50" height="50" alt="{{ tweet.user.username }}">
-                            {% endif %}
-                        </a>
                         <div class="media-body">
                             <h5 class="mt-0">
                                 <a href="{% url 'profile' tweet.user.username %}" class="text-dark text-decoration-none">
