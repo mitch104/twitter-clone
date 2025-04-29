@@ -8,11 +8,8 @@
     <div class="col-md-3">
         <div class="card mb-4">
             <div class="card-body">
-                <h5 class="card-title">Edit Profile</h5>
+                <h5 class="card-title">Profile Settings</h5>
                 <p class="card-text">Update your profile information.</p>
-                <a href="{% url 'profile' user.username %}" class="btn btn-outline-primary">
-                    <i class="fas fa-arrow-left"></i> Back to Profile
-                </a>
             </div>
         </div>
     </div>
@@ -20,16 +17,10 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Edit Profile</h5>
-                <form method="POST" enctype="multipart/form-data">
+                <form method="POST">
                     {% csrf_token %}
-                    <fieldset class="form-group">
-                        <legend class="border-bottom mb-4">Profile Info</legend>
-                        {{ u_form|crispy }}
-                        {{ p_form|crispy }}
-                    </fieldset>
-                    <div class="form-group">
-                        <button class="btn btn-primary" type="submit">Save Changes</button>
-                    </div>
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
                 </form>
             </div>
         </div>

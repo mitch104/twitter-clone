@@ -14,7 +14,13 @@ from django.views.generic import (
     View,
 )
 
-from .forms import ProfileUpdateForm, TweetForm, UserRegisterForm, UserUpdateForm
+from .forms import (
+    ProfileUpdateForm,
+    TweetForm,
+    UserProfileUpdateForm,
+    UserRegisterForm,
+    UserUpdateForm,
+)
 from .models import Follow, Like, Tweet
 
 
@@ -210,29 +216,14 @@ class ProfileView(DetailView):
 
 class EditProfileView(LoginRequiredMixin, UpdateView):
     template_name = 'core/edit_profile.html'
+    form_class = UserProfileUpdateForm
     success_url = reverse_lazy('profile')
 
     def get_object(self, queryset=None):
         return self.request.user
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.method == 'GET':
-            context['u_form'] = UserUpdateForm(instance=self.request.user)
-            context['p_form'] = ProfileUpdateForm(instance=self.request.user.profile)
-        return context
-
-    def post(self, request, *args, **kwargs):
-        u_form = UserUpdateForm(request.POST, instance=request.user)
-        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
-        
-        if u_form.is_valid() and p_form.is_valid():
-            u_form.save()
-            p_form.save()
-            messages.success(request, 'Your profile has been updated!')
-            return redirect('profile', username=request.user.username)
-        
-        return self.render_to_response(self.get_context_data(u_form=u_form, p_form=p_form))
+    def get_success_url(self):
+        return reverse_lazy('profile', kwargs={'username': self.request.user.username})
 
 
 class FollowUserView(LoginRequiredMixin, View):
