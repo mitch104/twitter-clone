@@ -2,6 +2,17 @@
 body {
     background-color: #f8f9fa;
     color: #212529;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.footer {
+    margin-top: auto;
 }
 
 .navbar-brand i {
