@@ -53,13 +53,16 @@
                                 </div>
                             </div>
                             {% if user.id != request.user.id %}
-                                <a href="{% url 'follow_user' user.username %}" class="btn btn-{% if user.id in following %}outline-{% endif %}primary">
-                                    {% if user.id in following %}
-                                        <i class="fas fa-user-minus"></i> Unfollow
-                                    {% else %}
-                                        <i class="fas fa-user-plus"></i> Follow
-                                    {% endif %}
-                                </a>
+                                <form method="post" action="{% url 'follow_user' user.username %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-{% if user.id in following %}outline-{% endif %}primary">
+                                        {% if user.id in following %}
+                                            <i class="fas fa-user-minus"></i> Unfollow
+                                        {% else %}
+                                            <i class="fas fa-user-plus"></i> Follow
+                                        {% endif %}
+                                    </button>
+                                </form>
                             {% endif %}
                         </div>
                     </div>

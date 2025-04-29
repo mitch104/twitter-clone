@@ -4,71 +4,73 @@
 {% block title %}{{ profile_user.username }} | Twitter Clone{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-3">
-        <div class="card mb-4">
-            <div class="card-body text-center">
-                <h4>@{{ profile_user.username }}</h4>
-                {% if profile_user.profile.bio %}
-                    <p>{{ profile_user.profile.bio }}</p>
-                {% endif %}
-                <p class="text-muted">Joined: {{ profile_user.profile.date_joined|date:"F Y" }}</p>
-                <div class="d-flex justify-content-around mb-3">
-                    <div>
-                        <strong>{{ profile_user.profile.get_tweets_count }}</strong>
-                        <div>Tweets</div>
+<div id="profile-section">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h4>@{{ profile_user.username }}</h4>
+                    {% if profile_user.profile.bio %}
+                        <p>{{ profile_user.profile.bio }}</p>
+                    {% endif %}
+                    <p class="text-muted">Joined: {{ profile_user.profile.date_joined|date:"F Y" }}</p>
+                    <div class="d-flex justify-content-around mb-3">
+                        <div>
+                            <strong>{{ profile_user.profile.get_tweets_count }}</strong>
+                            <div>Tweets</div>
+                        </div>
+                        <div>
+                            <strong id="followers-count">{{ profile_user.profile.get_followers_count }}</strong>
+                            <div>Followers</div>
+                        </div>
+                        <div>
+                            <strong>{{ profile_user.profile.get_following_count }}</strong>
+                            <div>Following</div>
+                        </div>
                     </div>
-                    <div>
-                        <strong id="followers-count">{{ profile_user.profile.get_followers_count }}</strong>
-                        <div>Followers</div>
-                    </div>
-                    <div>
-                        <strong>{{ profile_user.profile.get_following_count }}</strong>
-                        <div>Following</div>
-                    </div>
-                </div>
-                
-                {% if user.is_authenticated and user != profile_user %}
-                    <button class="btn btn-{% if is_following %}outline-{% endif %}primary w-100 mb-2"
-                            hx-get="{% url 'follow_user' profile_user.username %}"
-                            hx-target="#profile-section"
-                            hx-swap="outerHTML">
-                        {% if is_following %}
-                            <i class="fas fa-user-minus"></i> Unfollow
-                        {% else %}
-                            <i class="fas fa-user-plus"></i> Follow
-                        {% endif %}
-                    </button>
-                {% endif %}
-                
-                {% if user.is_authenticated and user == profile_user %}
-                    <a href="{% url 'edit_profile' %}" class="btn btn-outline-secondary w-100 mb-2">
-                        <i class="fas fa-edit"></i> Edit Profile
+                    
+                    {% if user.is_authenticated and user != profile_user %}
+                        <form method="post" action="{% url 'follow_user' profile_user.username %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-{% if is_following %}outline-{% endif %}primary w-100 mb-2">
+                                {% if is_following %}
+                                    <i class="fas fa-user-minus"></i> Unfollow
+                                {% else %}
+                                    <i class="fas fa-user-plus"></i> Follow
+                                {% endif %}
+                            </button>
+                        </form>
+                    {% endif %}
+                    
+                    {% if user.is_authenticated and user == profile_user %}
+                        <a href="{% url 'edit_profile' %}" class="btn btn-outline-secondary w-100 mb-2">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                    {% endif %}
+                    
+                    <a href="{% url 'users_list' %}" class="btn btn-outline-info w-100">
+                        <i class="fas fa-users"></i> Find More Users to Follow
                     </a>
-                {% endif %}
-                
-                <a href="{% url 'users_list' %}" class="btn btn-outline-info w-100">
-                    <i class="fas fa-users"></i> Find More Users to Follow
-                </a>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-6">
-        <h4>{{ profile_user.username }}'s Tweets</h4>
-        
-        {% if tweets %}
-            {% for tweet in tweets %}
-                {% include 'core/tweet_card.html' with tweet=tweet %}
-            {% endfor %}
-        {% else %}
-            <div class="card">
-                <div class="card-body">
-                    <p class="card-text text-center">
-                        No tweets from this user yet.
-                    </p>
+        <div class="col-md-6">
+            <h4>{{ profile_user.username }}'s Tweets</h4>
+            
+            {% if tweets %}
+                {% for tweet in tweets %}
+                    {% include 'core/tweet_card.html' with tweet=tweet %}
+                {% endfor %}
+            {% else %}
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text text-center">
+                            No tweets from this user yet.
+                        </p>
+                    </div>
                 </div>
-            </div>
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %} 

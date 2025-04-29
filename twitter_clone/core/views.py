@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -236,36 +236,23 @@ class EditProfileView(LoginRequiredMixin, UpdateView):
 
 
 class FollowUserView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        user_to_follow = get_object_or_404(User, username=kwargs['username'])
+    def post(self, request, username):
+        profile_user = get_object_or_404(User, username=username)
         
-        if user_to_follow == request.user:
-            messages.warning(request, "You cannot follow yourself")
-            return redirect('profile', username=kwargs['username'])
+        if request.user == profile_user:
+            return HttpResponseForbidden("You cannot follow yourself")
         
         follow, created = Follow.objects.get_or_create(
             follower=request.user,
-            following=user_to_follow
+            following=profile_user
         )
         
         if not created:
             follow.delete()
-            is_following = False
-            messages.success(request, f'You unfollowed {kwargs["username"]}')
+            messages.success(request, f'You unfollowed {username}')
         else:
-            is_following = True
-            messages.success(request, f'You are now following {kwargs["username"]}')
+            messages.success(request, f'You are now following {username}')
         
-        if request.htmx:
-            return render(request, 'core/profile.html', {
-                'profile_user': user_to_follow,
-                'is_following': is_following,
-                'tweets': Tweet.objects.filter(user=user_to_follow).order_by('-created_at'),
-                'liked_tweets': Like.objects.filter(user=request.user).values_list('tweet_id', flat=True)
-            })
-        
-        referer = request.META.get('HTTP_REFERER')
-        if referer and 'users' in referer:
-            return redirect('users_list')
-            
-        return redirect('profile', username=kwargs['username']) 
+        if referer := request.META.get('HTTP_REFERER'):
+            return redirect(referer, username=username)
+        return redirect('users_list')
