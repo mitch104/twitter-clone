@@ -124,7 +124,14 @@ def like_tweet(request, tweet_id):
     else:
         liked = True
         
-    return JsonResponse({'liked': liked, 'likes_count': tweet.get_likes_count()})
+    # Get updated liked tweets list for the template
+    liked_tweets = Like.objects.filter(user=request.user).values_list('tweet_id', flat=True)
+    
+    return render(request, 'core/tweet_card.html', {
+        'tweet': tweet,
+        'liked_tweets': liked_tweets,
+        'retweeted_tweets': []  # Add this if you want to track retweets too
+    })
 
 
 @login_required
@@ -143,10 +150,17 @@ def retweet(request, tweet_id):
             retweet.image = original_tweet.image
         retweet.save()
         retweeted = True
-        
-    return JsonResponse({
-        'retweeted': retweeted, 
-        'retweets_count': original_tweet.get_retweets_count()
+    
+    # Get updated retweeted tweets list for the template
+    retweeted_tweets = Tweet.objects.filter(
+        parent=original_tweet,
+        user=request.user
+    ).values_list('parent_id', flat=True)
+    
+    return render(request, 'core/tweet_card.html', {
+        'tweet': original_tweet,
+        'liked_tweets': Like.objects.filter(user=request.user).values_list('tweet_id', flat=True),
+        'retweeted_tweets': retweeted_tweets
     })
 
 

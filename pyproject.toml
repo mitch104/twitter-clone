@@ -9,13 +9,14 @@ description = "A Twitter clone built with Django"
 authors = ["Mitchell Harle <mitch104@protonmail.com>"]
 
 [tool.poetry.dependencies]
-python = ">=3.8"
+python = ">=3.9"
 Django = "4.2.9"
 psycopg2-binary = "2.9.6"
 django-crispy-forms = "2.0"
 crispy-bootstrap5 = "0.7"
 Pillow = "10.0.0"
 python-dotenv = "1.0.0"
+django-htmx = "^1.23.0"
 
 [tool.poetry.group.dev.dependencies]
 
