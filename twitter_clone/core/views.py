@@ -132,10 +132,16 @@ class LikeTweetView(LoginRequiredMixin, View):
         
         liked_tweets = Like.objects.filter(user=request.user).values_list('tweet_id', flat=True)
         
-        return render(request, 'core/tweet_card.html', {
-            'tweet': tweet,
-            'liked_tweets': liked_tweets,
-            'retweeted_tweets': []
+        if request.htmx:
+            return render(request, 'core/tweet_card.html', {
+                'tweet': tweet,
+                'liked_tweets': liked_tweets,
+                'retweeted_tweets': []
+            })
+        
+        return JsonResponse({
+            'liked': created,
+            'likes_count': tweet.get_likes_count()
         })
 
 
@@ -164,10 +170,16 @@ class RetweetView(LoginRequiredMixin, View):
             user=request.user
         ).values_list('parent_id', flat=True)
         
-        return render(request, 'core/tweet_card.html', {
-            'tweet': original_tweet,
-            'liked_tweets': Like.objects.filter(user=request.user).values_list('tweet_id', flat=True),
-            'retweeted_tweets': retweeted_tweets
+        if request.htmx:
+            return render(request, 'core/tweet_card.html', {
+                'tweet': original_tweet,
+                'liked_tweets': Like.objects.filter(user=request.user).values_list('tweet_id', flat=True),
+                'retweeted_tweets': retweeted_tweets
+            })
+        
+        return JsonResponse({
+            'retweeted': not existing_retweet,
+            'retweets_count': original_tweet.get_retweets_count()
         })
 
 
@@ -244,10 +256,12 @@ class FollowUserView(LoginRequiredMixin, View):
             is_following = True
             messages.success(request, f'You are now following {kwargs["username"]}')
         
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({
+        if request.htmx:
+            return render(request, 'core/profile.html', {
+                'profile_user': user_to_follow,
                 'is_following': is_following,
-                'followers_count': user_to_follow.profile.get_followers_count()
+                'tweets': Tweet.objects.filter(user=user_to_follow).order_by('-created_at'),
+                'liked_tweets': Like.objects.filter(user=request.user).values_list('tweet_id', flat=True)
             })
         
         referer = request.META.get('HTTP_REFERER')

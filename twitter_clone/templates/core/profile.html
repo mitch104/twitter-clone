@@ -29,14 +29,19 @@
                 </div>
                 
                 {% if user.is_authenticated and user != profile_user %}
-                    <button id="follow-btn" class="btn btn-{% if is_following %}outline-{% endif %}primary w-100 mb-2" data-username="{{ profile_user.username }}">
+                    <button class="btn btn-{% if is_following %}outline-{% endif %}primary w-100 mb-2"
+                            hx-get="{% url 'follow_user' profile_user.username %}"
+                            hx-target="#profile-section"
+                            hx-swap="outerHTML">
                         {% if is_following %}
                             <i class="fas fa-user-minus"></i> Unfollow
                         {% else %}
                             <i class="fas fa-user-plus"></i> Follow
                         {% endif %}
                     </button>
-                {% elif user == profile_user %}
+                {% endif %}
+                
+                {% if user.is_authenticated and user == profile_user %}
                     <a href="{% url 'edit_profile' %}" class="btn btn-outline-secondary w-100 mb-2">
                         <i class="fas fa-edit"></i> Edit Profile
                     </a>
@@ -66,36 +71,4 @@
         {% endif %}
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-$(document).ready(function() {
-    // Follow/Unfollow functionality
-    $('#follow-btn').click(function() {
-        const username = $(this).data('username');
-        
-        $.ajax({
-            url: `/profile/${username}/follow/`,
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            success: function(data) {
-                const btn = $('#follow-btn');
-                
-                if (data.is_following) {
-                    btn.removeClass('btn-primary').addClass('btn-outline-primary');
-                    btn.html('<i class="fas fa-user-minus"></i> Unfollow');
-                } else {
-                    btn.removeClass('btn-outline-primary').addClass('btn-primary');
-                    btn.html('<i class="fas fa-user-plus"></i> Follow');
-                }
-                
-                $('#followers-count').text(data.followers_count);
-            }
-        });
-    });
-});
-</script>
 {% endblock %} 
