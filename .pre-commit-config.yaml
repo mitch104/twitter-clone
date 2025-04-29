@@ -12,13 +12,17 @@ repos:
     -   id: ruff
         name: ruff
         entry: poetry run ruff
-        language: system
+        language: python
         types: [python]
         args: [--fix]
+        pass_filenames: true
+        additional_dependencies: [.]
 
     -   id: mypy
         name: mypy
         entry: poetry run mypy
-        language: system
+        language: python
         types: [python]
         require_serial: true
+        pass_filenames: true
+        additional_dependencies: [.]

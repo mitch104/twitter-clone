@@ -48,7 +48,7 @@ known-first-party = ["twitter_clone"]
 
 [tool.mypy]
 python_version = "3.11"
-plugins = ["mypy_django_plugin.main", "pydantic.mypy"]
+plugins = ["mypy_django_plugin.main"]
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -61,6 +61,7 @@ warn_unused_ignores = true
 warn_no_return = true
 warn_unreachable = true
 python_executable = "python"
+mypy_path = [".", "twitter_clone"]
 
 [[tool.mypy.overrides]]
 module = [
