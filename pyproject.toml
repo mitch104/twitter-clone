@@ -1,0 +1,23 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "twitter-clone"
+version = "0.1.0"
+description = "A Twitter clone built with Django"
+authors = ["Mitchell Harle <mitch104@protonmail.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.8"
+Django = "4.2.9"
+psycopg2-binary = "2.9.6"
+django-crispy-forms = "2.0"
+crispy-bootstrap5 = "0.7"
+Pillow = "10.0.0"
+python-dotenv = "1.0.0"
+
+[tool.poetry.group.dev.dependencies]
+
+[tool.poetry.scripts]
+start = "twitter_clone.manage:main" 

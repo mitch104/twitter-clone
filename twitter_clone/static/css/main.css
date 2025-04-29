@@ -1,0 +1,77 @@
+/* General Styles */
+body {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.navbar-brand i {
+    color: #1DA1F2;
+}
+
+/* Tweet Styles */
+.tweet-card {
+    transition: all 0.3s ease;
+}
+
+.tweet-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tweet-actions .btn {
+    margin-right: 5px;
+}
+
+.tweet-actions .btn i {
+    margin-right: 3px;
+}
+
+.media-body {
+    margin-left: 10px;
+}
+
+.like-btn.active {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+.retweet-btn.active {
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.retweet-info {
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+/* Profile Page */
+.profile-header {
+    background-color: #1DA1F2;
+    color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 15px 0;
+}
+
+.profile-stat-item {
+    text-align: center;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .navbar .container {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .col-md-3, .col-md-6 {
+        margin-bottom: 15px;
+    }
+} 

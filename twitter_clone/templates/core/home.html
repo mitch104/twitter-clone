@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Home | Twitter Clone{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Welcome, {{ user.username }}</h5>
+                <p class="card-text">
+                    <i class="fas fa-user-friends"></i> Following: {{ user.profile.get_following_count }}<br>
+                    <i class="fas fa-users"></i> Followers: {{ user.profile.get_followers_count }}<br>
+                    <i class="fas fa-comment"></i> Tweets: {{ user.profile.get_tweets_count }}
+                </p>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'profile' user.username %}" class="btn btn-primary">View Profile</a>
+                    <a href="{% url 'users_list' %}" class="btn btn-outline-info">Find People to Follow</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Create a new tweet</h5>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-primary">Tweet</button>
+                </form>
+            </div>
+        </div>
+
+        <h4>Timeline</h4>
+        
+        {% if tweets %}
+            {% for tweet in tweets %}
+                {% include 'core/tweet_card.html' with tweet=tweet %}
+            {% endfor %}
+        {% else %}
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text text-center">
+                        No tweets to display. Follow some users to see their tweets, or post your own!
+                    </p>
+                    <div class="text-center">
+                        <a href="{% url 'users_list' %}" class="btn btn-primary">Find People to Follow</a>
+                        <a href="{% url 'explore' %}" class="btn btn-outline-primary">Explore Tweets</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Trending</h5>
+                <p class="card-text">This is a simplified Twitter clone. Trending functionality is not implemented.</p>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'explore' %}" class="btn btn-outline-primary">Explore</a>
+                    <a href="{% url 'users_list' %}" class="btn btn-outline-info">Find People</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
