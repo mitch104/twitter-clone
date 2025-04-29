@@ -5,19 +5,20 @@ from django.contrib.auth.models import User
 from .models import Profile, Tweet
 
 
-class UserRegisterForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput)
-    password2 = forms.CharField(widget=forms.PasswordInput, label='Confirm password')
+class UserRegisterForm(UserCreationForm):
+    email = forms.EmailField()
 
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['username', 'email', 'password1', 'password2']
 
-    def clean_password2(self):
-        cd = self.cleaned_data
-        if cd['password'] != cd['password2']:
-            raise forms.ValidationError('Passwords don\'t match.')
-        return cd['password2']
+    def clean(self) -> dict:
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get('password1')
+        password2 = cleaned_data.get('password2')
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("Passwords don't match")
+        return cleaned_data
 
 
 class UserUpdateForm(forms.ModelForm):
@@ -51,19 +52,22 @@ class UserProfileUpdateForm(forms.ModelForm):
     bio = forms.CharField(widget=forms.Textarea, required=False)
 
     class Meta:
-        model = User
-        fields = ['username', 'email']
+        model = Profile
+        fields = ['bio']
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: tuple, **kwargs: dict) -> None:
         super().__init__(*args, **kwargs)
-        if self.instance and hasattr(self.instance, 'profile'):
-            self.fields['bio'].initial = self.instance.profile.bio
+        if self.instance and self.instance.user:
+            self.fields['username'] = forms.CharField(initial=self.instance.user.username)
+            self.fields['email'] = forms.EmailField(initial=self.instance.user.email)
 
-    def save(self, commit=True):
-        user = super().save(commit=False)
+    def save(self, commit: bool = True) -> Profile:
+        profile = super().save(commit=False)
         if commit:
-            user.save()
-            profile, created = Profile.objects.get_or_create(user=user)
-            profile.bio = self.cleaned_data['bio']
             profile.save()
-        return user 
+            if 'username' in self.cleaned_data:
+                profile.user.username = self.cleaned_data['username']
+            if 'email' in self.cleaned_data:
+                profile.user.email = self.cleaned_data['email']
+            profile.user.save()
+        return profile

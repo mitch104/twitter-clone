@@ -34,7 +34,7 @@
         </div>
 
         <h4>Timeline</h4>
-        
+
         {% if tweets %}
             {% for tweet in tweets %}
                 {% include 'core/tweet_card.html' with tweet=tweet %}
@@ -54,4 +54,4 @@
         {% endif %}
     </div>
 </div>
-{% endblock %} 
+{% endblock %}

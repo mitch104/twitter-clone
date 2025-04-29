@@ -41,34 +41,34 @@
             {% endif %}
             <small class="text-muted">{{ tweet.created_at|date:"F j, Y, g:i a" }}</small>
         {% endif %}
-        
+
         <div class="mt-3 tweet-actions">
             <a href="{% url 'tweet_detail' tweet.id %}" class="btn btn-sm btn-outline-secondary">
                 <i class="far fa-comment"></i> Comment
             </a>
-            
+
             <button class="btn btn-sm btn-outline-success retweet-btn {% if tweet.id in retweeted_tweets %}active{% endif %}"
                     hx-get="{% url 'retweet' tweet.id %}"
                     hx-target="closest .tweet-card"
                     hx-swap="outerHTML"
                     hx-indicator=".htmx-indicator">
-                <i class="fas fa-retweet"></i> 
+                <i class="fas fa-retweet"></i>
                 <span class="retweet-count">{{ tweet.get_retweets_count }}</span>
             </button>
-            
+
             <button class="btn btn-sm btn-outline-danger like-btn {% if tweet.id in liked_tweets %}active{% endif %}"
                     hx-get="{% url 'like_tweet' tweet.id %}"
                     hx-target="closest .tweet-card"
                     hx-swap="outerHTML"
                     hx-indicator=".htmx-indicator">
-                <i class="{% if tweet.id in liked_tweets %}fas{% else %}far{% endif %} fa-heart"></i> 
+                <i class="{% if tweet.id in liked_tweets %}fas{% else %}far{% endif %} fa-heart"></i>
                 <span class="like-count">{{ tweet.get_likes_count }}</span>
             </button>
-            
+
             <button class="btn btn-sm btn-outline-primary share-btn"
                     onclick="navigator.clipboard.writeText('{{ request.scheme }}://{{ request.get_host }}{% url 'tweet_detail' tweet.id %}')">
                 <i class="fas fa-share"></i> Share
             </button>
         </div>
     </div>
-</div> 
+</div>

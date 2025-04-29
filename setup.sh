@@ -46,4 +46,4 @@ docker-compose exec web python twitter_clone/manage.py migrate
 
 echo "Twitter Clone setup complete!"
 echo "You can now access the application at http://localhost:8000/"
-echo "Create a superuser with: docker-compose exec web python twitter_clone/manage.py createsuperuser" 
+echo "Create a superuser with: docker-compose exec web python twitter_clone/manage.py createsuperuser"

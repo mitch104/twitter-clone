@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   db:
-    image: postgres:13
+    image: postgres:16
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
@@ -13,20 +13,35 @@ services:
       - POSTGRES_DB=twitter_clone
     ports:
       - "5432:5432"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   web:
     build: .
     command: >
       sh -c "pip install -e . &&
+             python twitter_clone/manage.py migrate &&
              python twitter_clone/manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/code
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - ./.env
+    networks:
+      - app-network
 
 volumes:
-  postgres_data: 
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

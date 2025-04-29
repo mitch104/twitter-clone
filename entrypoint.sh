@@ -21,4 +21,4 @@ python manage.py collectstatic --noinput
 
 # Start server
 echo "Starting server..."
-exec "$@" 
+exec "$@"

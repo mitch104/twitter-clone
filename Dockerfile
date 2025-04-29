@@ -1,33 +1,25 @@
-FROM python:3.9-slim
+FROM python:3.11-slim
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-ENV POETRY_VERSION=1.7.1
-ENV POETRY_HOME="/opt/poetry"
-ENV POETRY_VIRTUALENVS_CREATE=false
-ENV PATH="$POETRY_HOME/bin:$PATH"
+WORKDIR /app
 
-WORKDIR /code
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Poetry
-RUN apt-get update && apt-get install -y netcat-openbsd curl
-RUN curl -sSL https://install.python-poetry.org | python3 -
+RUN pip install poetry==1.7.1
 
-# Copy poetry files
-COPY pyproject.toml poetry.lock* ./
+# Copy only requirements to cache them in docker layer
+COPY poetry.lock pyproject.toml /app/
 
-# Install dependencies
-RUN poetry install --no-interaction --no-ansi
+# Project initialization
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi
 
 # Copy project
-COPY . .
+COPY . /app/
 
-# Make entrypoint script executable
-RUN chmod +x entrypoint.sh
-
-EXPOSE 8000
-
-# Set entrypoint
-ENTRYPOINT ["/code/entrypoint.sh"]
-
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"] 
+# Run the application
+CMD ["python", "twitter_clone/manage.py", "runserver", "0.0.0.0:8000"]

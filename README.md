@@ -1,69 +1,80 @@
 # Twitter Clone
 
-A simple Twitter clone built with Django and PostgreSQL.
+A Twitter clone built with Django, featuring real-time interactions using HTMX.
 
 ## Features
 
-- User registration and authentication
-- Post tweets with text and images
-- Follow/unfollow other users
-- Like/unlike tweets
-- Retweet functionality
-- Share tweets via URL
-- User profiles with bio and profile picture
+- User authentication and profiles
+- Tweet creation with text and images
+- Like and retweet functionality
+- User following system
+- Real-time updates using HTMX
+- Responsive design with Bootstrap 5
 
-## Tech Stack
+## Prerequisites
 
-- Django 4.2
-- PostgreSQL
-- Docker & Docker Compose
-- Bootstrap 5
-- jQuery
-
-## Setup and Installation
-
-### Prerequisites
-
+- Python 3.11+
+- Poetry
 - Docker and Docker Compose
 
-### Installation Steps
+## Development Setup
 
 1. Clone the repository:
-   ```
-   git clone <repository-url>
+   ```bash
+   git clone https://github.com/yourusername/twitter-clone.git
    cd twitter-clone
    ```
 
-2. Start the Docker containers:
-   ```
-   docker-compose up -d --build
-   ```
-
-3. Create a superuser:
-   ```
-   docker-compose exec web python manage.py createsuperuser
+2. Install dependencies using Poetry:
+   ```bash
+   poetry install
    ```
 
-4. Visit `http://localhost:8000` in your browser
+3. Set up pre-commit hooks:
+   ```bash
+   # Install pre-commit
+   poetry add --group dev pre-commit
 
-### Development
+   # Install the git hooks
+   pre-commit install
 
-- Run migrations:
-  ```
-  docker-compose exec web python manage.py makemigrations
-  docker-compose exec web python manage.py migrate
-  ```
+   # Run pre-commit on all files
+   pre-commit run --all-files
+   ```
 
-- Collect static files:
-  ```
-  docker-compose exec web python manage.py collectstatic
-  ```
+4. Create a `.env` file in the project root:
+   ```env
+   DEBUG=1
+   SECRET_KEY=your-secret-key
+   DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+   POSTGRES_DB=twitter_clone
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=postgres
+   ```
 
-- Create a superuser:
-  ```
-  docker-compose exec web python manage.py createsuperuser
-  ```
+5. Start the development environment:
+   ```bash
+   docker-compose up --build
+   ```
 
-## License
+6. Access the application at `http://localhost:8000`
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+## Code Quality Tools
+
+This project uses several tools to maintain code quality:
+
+- **Ruff**: For linting and code formatting
+- **Mypy**: For static type checking
+- **Pre-commit**: For running checks before commits
+
+### Pre-commit Hooks
+
+Install pre-commit:
+```bash
+pre-commit install
+```
+
+The following checks are run automatically before each commit:
+```bash
+pre-commit run --all-files
+```
