@@ -13,11 +13,14 @@ services:
       - POSTGRES_DB=twitter_clone
     ports:
       - "5432:5432"
+    networks:
+      - app-network
 
   web:
     build: .
     command: >
       sh -c "pip install -e . &&
+             python twitter_clone/manage.py migrate &&
              python twitter_clone/manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/code
@@ -27,6 +30,12 @@ services:
       - db
     env_file:
       - ./.env
+    networks:
+      - app-network
 
 volumes:
-  postgres_data: 
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge 
