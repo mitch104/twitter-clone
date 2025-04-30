@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
@@ -41,3 +41,14 @@ class TweetForm(forms.ModelForm):
     class Meta:
         model = Tweet
         fields = ["content", "image"]
+
+    def __init__(self, *args: Any, user: CustomUser | None = None, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+    def save(self, commit: bool = True) -> Tweet:
+        tweet = cast(Tweet, super().save(commit=False))
+        tweet.user = self.user
+        if commit:
+            tweet.save()
+        return tweet

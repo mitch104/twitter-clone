@@ -25,10 +25,14 @@ class CustomUser(AbstractUser):
     def get_tweets_count(self) -> int:
         return int(self.tweets.count())
 
+    def is_followed_by(self, user: "CustomUser") -> bool:
+        """Check if this user is followed by another user."""
+        if not user.is_authenticated:
+            return False
+        return bool(Follow.objects.filter(follower=user, following=self).exists())
+
 
 class Tweet(models.Model):
-    """Model for tweets."""
-
     user = models.ForeignKey("core.CustomUser", on_delete=models.CASCADE, related_name="tweets")
     content = models.TextField(max_length=280)
     image = models.ImageField(upload_to="tweet_images", blank=True, null=True)
@@ -50,7 +54,7 @@ class Tweet(models.Model):
     def is_retweet(self) -> bool:
         return bool(self.parent)
 
-    def is_liked_by(self, user: CustomUser) -> bool:
+    def is_liked_by(self, user: "CustomUser") -> bool:
         if not user.is_authenticated:
             return False
         return bool(self.likes.filter(user=user).exists())
@@ -78,8 +82,6 @@ class Like(models.Model):
 
 
 class Follow(models.Model):
-    """Model for user follows."""
-
     follower = models.ForeignKey("core.CustomUser", on_delete=models.CASCADE, related_name="following")
     following = models.ForeignKey("core.CustomUser", on_delete=models.CASCADE, related_name="followers")
     created_at = models.DateTimeField(default=timezone.now)

@@ -2,6 +2,7 @@ from typing import Any, TypeVar, cast
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q, QuerySet
 from django.http import HttpRequest, HttpResponse
@@ -92,14 +93,15 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class NewTweetView(LoginRequiredMixin, CreateView):
+class NewTweetView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = TweetForm
     success_url = reverse_lazy("home")
+    success_message = "Your tweet has been posted!"
 
-    def form_valid(self, form: TweetForm) -> HttpResponse:
-        form.instance.user = self.request.user
-        messages.success(self.request, "Your tweet has been posted!")
-        return super().form_valid(form)
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs: dict[str, Any] = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
 
 
 class LikeTweetView(LoginRequiredMixin, FormView):
@@ -122,24 +124,25 @@ class RetweetView(LoginRequiredMixin, FormView):
 
 
 class ProfileView(LoginRequiredMixin, DetailView):
-    template_name = "core/profile.html"
     model = CustomUser
-    context_object_name = "user"
+    template_name = "core/profile.html"
+    context_object_name = "profile_user"
     slug_field = "username"
     slug_url_kwarg = "username"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        user = cast(CustomUser, self.object)
-        context["tweets"] = Tweet.objects.filter(user=user).order_by("-created_at")
-        context["is_following"] = Follow.objects.filter(follower=self.request.user, following=user).exists()
+        context["is_following"] = self.object.is_followed_by(self.request.user)
         return context
 
 
-class EditProfileView(LoginRequiredMixin, FormView):
+class EditProfileView(LoginRequiredMixin, SuccessMessageMixin, FormView):
     template_name = "core/edit_profile.html"
     form_class = UserUpdateForm
-    success_url = "/"
+    success_message = "Your profile has been updated successfully!"
+
+    def get_success_url(self) -> str:
+        return str(reverse_lazy("edit_profile", kwargs={"username": self.request.user.username}))
 
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs: dict[str, Any] = super().get_form_kwargs()
