@@ -14,16 +14,16 @@ class CustomUser(AbstractUser):
     date_joined = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
-        return self.username
+        return str(self.username)
 
     def get_following_count(self) -> int:
-        return self.following.count()
+        return int(self.following.count())
 
     def get_followers_count(self) -> int:
-        return self.followers.count()
+        return int(self.followers.count())
 
     def get_tweets_count(self) -> int:
-        return self.tweets.count()
+        return int(self.tweets.count())
 
 
 class Tweet(models.Model):
@@ -44,18 +44,18 @@ class Tweet(models.Model):
         return f"{self.user.username}: {self.content[:50]}"
 
     def get_likes_count(self) -> int:
-        return self.likes.count()
+        return int(self.likes.count())
 
     def get_retweets_count(self) -> int:
-        return self.retweets.count()
+        return int(self.retweets.count())
 
     def is_retweet(self) -> bool:
-        return self.parent is not None
+        return bool(self.parent)
 
     def is_liked_by(self, user: CustomUser) -> bool:
         if not user.is_authenticated:
             return False
-        return self.likes.filter(user=user).exists()
+        return bool(self.likes.filter(user=user).exists())
 
     def get_likes(self) -> "QuerySet[CustomUser]":
         return CustomUser.objects.filter(likes__tweet=self)

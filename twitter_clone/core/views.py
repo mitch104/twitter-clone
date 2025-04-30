@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Q, QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,
     DetailView,
@@ -23,10 +24,10 @@ from .models import CustomUser, Follow, Like, Tweet
 _T = TypeVar('_T', bound=Any)
 
 
-class RegisterView(FormView):
-    template_name = 'core/register.html'
+class RegisterView(CreateView):
     form_class = UserRegisterForm
-    success_url = '/'
+    template_name = 'core/register.html'
+    success_url = reverse_lazy('login')
 
     def form_valid(self, form: UserRegisterForm) -> HttpResponse:
         response = super().form_valid(form)

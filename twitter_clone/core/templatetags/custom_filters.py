@@ -31,4 +31,4 @@ def format_username(value: str) -> str:
 @register.filter
 def format_tweet_content(value: str) -> str:
     """Format tweet content with line breaks."""
-    return mark_safe(value.replace('\n', '<br>'))
+    return str(mark_safe(value.replace('\n', '<br>')))
