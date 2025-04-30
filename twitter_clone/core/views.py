@@ -8,7 +8,7 @@ from django.db.models import Q, QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView, FormView, ListView, View
+from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView, View
 from django.views.generic.base import ContextMixin
 
 from .forms import (
@@ -144,20 +144,15 @@ class ProfileView(LoginRequiredMixin, TweetContextMixin, DetailView):
         return context
 
 
-class EditProfileView(LoginRequiredMixin, SuccessMessageMixin, FormView):
-    template_name = "core/edit_profile.html"
+class EditProfileView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = CustomUser
     form_class = UserUpdateForm
+    template_name = "core/edit_profile.html"
     success_message = "Your profile has been updated successfully!"
     success_url = reverse_lazy("edit_profile")
 
-    def get_form_kwargs(self) -> dict[str, Any]:
-        kwargs: dict[str, Any] = super().get_form_kwargs()
-        kwargs["instance"] = self.request.user
-        return kwargs
-
-    def form_valid(self, form: UserUpdateForm) -> HttpResponse:
-        form.save()
-        return super().form_valid(form)
+    def get_object(self, queryset: QuerySet[CustomUser] | None = None) -> CustomUser:
+        return cast(CustomUser, self.request.user)
 
 
 class FollowUserView(LoginRequiredMixin, FormView):
