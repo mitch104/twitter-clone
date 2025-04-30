@@ -10,6 +10,9 @@
             <div class="card-body">
                 <h5 class="card-title">Profile Settings</h5>
                 <p class="card-text">Update your profile information.</p>
+                <a href="{% url 'profile' user.username %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Profile
+                </a>
             </div>
         </div>
     </div>

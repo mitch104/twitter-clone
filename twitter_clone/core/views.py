@@ -148,9 +148,7 @@ class EditProfileView(LoginRequiredMixin, SuccessMessageMixin, FormView):
     template_name = "core/edit_profile.html"
     form_class = UserUpdateForm
     success_message = "Your profile has been updated successfully!"
-
-    def get_success_url(self) -> str:
-        return str(reverse_lazy("edit_profile", kwargs={"username": self.request.user.username}))
+    success_url = reverse_lazy("edit_profile")
 
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs: dict[str, Any] = super().get_form_kwargs()
@@ -172,6 +170,4 @@ class FollowUserView(LoginRequiredMixin, FormView):
         if not created:
             follow.delete()
 
-        if request.headers.get("x-requested-with") == "XMLHttpRequest":
-            return HttpResponse(status=204)
-        return redirect("profile", username=user_to_follow.username)
+        return redirect(request.META.get("HTTP_REFERER", reverse_lazy("home")))
