@@ -1,3 +1,4 @@
+import time
 from typing import Any, cast
 
 from django.contrib import messages
@@ -44,7 +45,7 @@ class HomeView(LoginRequiredMixin, TweetContextMixin, ListView):
     template_name = "core/home.html"
     model = Tweet
     context_object_name = "tweets"
-    paginate_by = 4
+    paginate_by = 6
 
     def get_queryset(self) -> QuerySet[Tweet]:
         following = Follow.objects.filter(follower=self.request.user).values_list("following", flat=True)
@@ -58,8 +59,6 @@ class HomeView(LoginRequiredMixin, TweetContextMixin, ListView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         # Just to make infinite scrolling show spinner to make it more obvious
         if self.request.htmx:
-            import time
-
             time.sleep(1)
         context: dict[str, Any] = super().get_context_data(**kwargs)
         if not self.request.htmx:
@@ -71,10 +70,16 @@ class ExploreView(LoginRequiredMixin, TweetContextMixin, ListView):
     template_name = "core/explore.html"
     model = Tweet
     context_object_name = "tweets"
-    paginate_by = 10
+    paginate_by = 6
 
     def get_queryset(self) -> QuerySet[Tweet]:
         return Tweet.objects.all().order_by("-created_at")
+
+    def get_template_names(self) -> list[str]:
+        if self.request.htmx:
+            time.sleep(1)
+            return ["core/timeline.html"]
+        return [self.template_name]
 
 
 class UsersListView(LoginRequiredMixin, ListView):
