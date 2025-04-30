@@ -43,10 +43,6 @@
         {% endif %}
 
         <div class="mt-3 tweet-actions">
-            <a href="{% url 'tweet_detail' tweet.id %}" class="btn btn-sm btn-outline-secondary">
-                <i class="far fa-comment"></i> Comment
-            </a>
-
             <button class="btn btn-sm btn-outline-success retweet-btn {% if tweet.id in retweeted_tweets %}active{% endif %}"
                     hx-get="{% url 'retweet' tweet.id %}"
                     hx-target="closest .tweet-card"
@@ -66,9 +62,22 @@
             </button>
 
             <button class="btn btn-sm btn-outline-primary share-btn"
-                    onclick="navigator.clipboard.writeText('{{ request.scheme }}://{{ request.get_host }}{% url 'tweet_detail' tweet.id %}')">
+                    onclick="copyTweetUrl(this, '{{ request.scheme }}://{{ request.get_host }}{% url 'tweet_detail' tweet.id %}')">
                 <i class="fas fa-share"></i> Share
             </button>
         </div>
     </div>
 </div>
+
+<script>
+function copyTweetUrl(button, url) {
+    navigator.clipboard.writeText(url).then(() => {
+        button.classList.add('copied');
+        button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => {
+            button.classList.remove('copied');
+            button.innerHTML = '<i class="fas fa-share"></i> Share';
+        }, 1500);
+    });
+}
+</script>

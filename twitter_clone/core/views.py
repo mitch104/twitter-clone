@@ -2,7 +2,6 @@ from typing import Any, TypeVar, cast
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q, QuerySet
 from django.http import HttpRequest, HttpResponse
@@ -16,10 +15,10 @@ from django.views.generic import (
 
 from .forms import (
     TweetForm,
-    UserProfileUpdateForm,
     UserRegisterForm,
+    UserUpdateForm,
 )
-from .models import Follow, Like, Tweet
+from .models import CustomUser, Follow, Like, Tweet
 
 _T = TypeVar('_T', bound=Any)
 
@@ -65,12 +64,12 @@ class ExploreView(LoginRequiredMixin, ListView):
 
 class UsersListView(LoginRequiredMixin, ListView):
     template_name = 'core/users_list.html'
-    model = User
+    model = CustomUser
     context_object_name = 'users'
     paginate_by = 10
 
-    def get_queryset(self) -> QuerySet[User]:
-        return User.objects.exclude(id=self.request.user.id).order_by('username')
+    def get_queryset(self) -> QuerySet[CustomUser]:
+        return CustomUser.objects.exclude(id=self.request.user.id).order_by('username')
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
@@ -130,12 +129,12 @@ class RetweetView(LoginRequiredMixin, FormView):
 
 class ProfileView(LoginRequiredMixin, DetailView):
     template_name = 'core/profile.html'
-    model = User
-    context_object_name = 'profile_user'
+    model = CustomUser
+    context_object_name = 'user'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        user = cast(User, self.object)
+        user = cast(CustomUser, self.object)
         context['tweets'] = Tweet.objects.filter(user=user).order_by('-created_at')
         context['is_following'] = Follow.objects.filter(
             follower=self.request.user,
@@ -146,22 +145,22 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
 class EditProfileView(LoginRequiredMixin, FormView):
     template_name = 'core/edit_profile.html'
-    form_class = UserProfileUpdateForm
+    form_class = UserUpdateForm
     success_url = '/'
 
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs: dict[str, Any] = super().get_form_kwargs()
-        kwargs['instance'] = self.request.user.profile
+        kwargs['instance'] = self.request.user
         return kwargs
 
-    def form_valid(self, form: UserProfileUpdateForm) -> HttpResponse:
+    def form_valid(self, form: UserUpdateForm) -> HttpResponse:
         form.save()
         return super().form_valid(form)
 
 
 class FollowUserView(LoginRequiredMixin, FormView):
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        user_to_follow = get_object_or_404(User, username=kwargs['username'])
+        user_to_follow = get_object_or_404(CustomUser, username=kwargs['username'])
         if user_to_follow == request.user:
             raise PermissionDenied("You cannot follow yourself.")
 

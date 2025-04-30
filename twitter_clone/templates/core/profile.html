@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ profile_user.username }} | Twitter Clone{% endblock %}
+{% block title %}{{ user.username }} | Twitter Clone{% endblock %}
 
 {% block content %}
 <div id="profile-section">
@@ -9,28 +9,28 @@
         <div class="col-md-3">
             <div class="card mb-4">
                 <div class="card-body text-center">
-                    <h4>@{{ profile_user.username }}</h4>
-                    {% if profile_user.profile.bio %}
-                        <p>{{ profile_user.profile.bio }}</p>
+                    <h4>@{{ user.username }}</h4>
+                    {% if user.bio %}
+                        <p>{{ user.bio }}</p>
                     {% endif %}
-                    <p class="text-muted">Joined: {{ profile_user.profile.date_joined|date:"F Y" }}</p>
+                    <p class="text-muted">Joined: {{ user.date_joined|date:"F Y" }}</p>
                     <div class="d-flex justify-content-around mb-3">
                         <div>
-                            <strong>{{ profile_user.profile.get_tweets_count }}</strong>
+                            <strong>{{ user.get_tweets_count }}</strong>
                             <div>Tweets</div>
                         </div>
                         <div>
-                            <strong id="followers-count">{{ profile_user.profile.get_followers_count }}</strong>
+                            <strong id="followers-count">{{ user.get_followers_count }}</strong>
                             <div>Followers</div>
                         </div>
                         <div>
-                            <strong>{{ profile_user.profile.get_following_count }}</strong>
+                            <strong>{{ user.get_following_count }}</strong>
                             <div>Following</div>
                         </div>
                     </div>
 
-                    {% if user.is_authenticated and user != profile_user %}
-                        <form method="post" action="{% url 'follow_user' profile_user.username %}">
+                    {% if request.user.is_authenticated and request.user != user %}
+                        <form method="post" action="{% url 'follow_user' user.username %}">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-{% if is_following %}outline-{% endif %}primary w-100 mb-2">
                                 {% if is_following %}
@@ -42,7 +42,7 @@
                         </form>
                     {% endif %}
 
-                    {% if user.is_authenticated and user == profile_user %}
+                    {% if request.user.is_authenticated and request.user == user %}
                         <a href="{% url 'edit_profile' %}" class="btn btn-outline-secondary w-100 mb-2">
                             <i class="fas fa-edit"></i> Edit Profile
                         </a>
@@ -55,7 +55,7 @@
             </div>
         </div>
         <div class="col-md-6">
-            <h4>{{ profile_user.username }}'s Tweets</h4>
+            <h4>{{ user.username }}'s Tweets</h4>
 
             {% if tweets %}
                 {% for tweet in tweets %}

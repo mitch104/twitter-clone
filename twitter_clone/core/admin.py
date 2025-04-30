@@ -1,12 +1,17 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
-from .models import Follow, Like, Profile, Tweet
+from .models import CustomUser, Follow, Like, Tweet
 
 
-@admin.register(Profile)
-class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'date_joined')
-    search_fields = ('user__username', 'user__email')
+@admin.register(CustomUser)
+class CustomUserAdmin(UserAdmin):
+    list_display = ('username', 'email', 'date_joined')
+    search_fields = ('username', 'email')
+    fieldsets = UserAdmin.fieldsets + (
+        ('Additional Info', {'fields': ('bio',)}),
+    )
+
 
 @admin.register(Tweet)
 class TweetAdmin(admin.ModelAdmin):
@@ -14,11 +19,13 @@ class TweetAdmin(admin.ModelAdmin):
     list_filter = ('created_at',)
     search_fields = ('user__username', 'content')
 
+
 @admin.register(Like)
 class LikeAdmin(admin.ModelAdmin):
     list_display = ('user', 'tweet', 'created_at')
     list_filter = ('created_at',)
     search_fields = ('user__username', 'tweet__content')
+
 
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):

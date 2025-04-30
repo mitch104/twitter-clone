@@ -75,3 +75,20 @@ body {
         margin-bottom: 15px;
     }
 }
+
+/* Share Button Animation */
+.share-btn.copied {
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.share-btn.copied i {
+    animation: fadeInOut 1.5s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}

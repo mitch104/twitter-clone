@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import QuerySet
 from django.utils import timezone
@@ -9,28 +9,27 @@ if TYPE_CHECKING:
     from django.db.models import QuerySet
 
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+class CustomUser(AbstractUser):
     bio = models.TextField(max_length=500, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
-        return f"{self.user.username}'s profile"
+        return self.username
 
     def get_following_count(self) -> int:
-        return Follow.objects.filter(follower=self.user).count()
+        return self.following.count()
 
     def get_followers_count(self) -> int:
-        return Follow.objects.filter(following=self.user).count()
+        return self.followers.count()
 
     def get_tweets_count(self) -> int:
-        return Tweet.objects.filter(user=self.user).count()
+        return self.tweets.count()
 
 
 class Tweet(models.Model):
     """Model for tweets."""
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tweets")
+    user = models.ForeignKey('core.CustomUser', on_delete=models.CASCADE, related_name="tweets")
     content = models.TextField(max_length=280)
     image = models.ImageField(upload_to="tweet_images", blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
@@ -48,30 +47,27 @@ class Tweet(models.Model):
         return self.likes.count()
 
     def get_retweets_count(self) -> int:
-        return Tweet.objects.filter(parent=self).count()
+        return self.retweets.count()
 
     def is_retweet(self) -> bool:
         return self.parent is not None
 
-    def is_liked_by(self, user: User) -> bool:
+    def is_liked_by(self, user: CustomUser) -> bool:
         if not user.is_authenticated:
             return False
-        return Like.objects.filter(tweet=self, user=user).exists()
+        return self.likes.filter(user=user).exists()
 
-    def get_likes(self) -> "QuerySet[User]":
-        return User.objects.filter(likes__tweet=self)
+    def get_likes(self) -> "QuerySet[CustomUser]":
+        return CustomUser.objects.filter(likes__tweet=self)
 
-    def get_retweets(self) -> "QuerySet[User]":
-        return User.objects.filter(retweets__tweet=self)
-
-    def get_replies(self) -> "QuerySet[Tweet]":
-        return Tweet.objects.filter(parent=self)
+    def get_retweets(self) -> "QuerySet[CustomUser]":
+        return CustomUser.objects.filter(retweets__tweet=self)
 
 
 class Like(models.Model):
     """Model for tweet likes."""
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="likes")
+    user = models.ForeignKey('core.CustomUser', on_delete=models.CASCADE, related_name="likes")
     tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name="likes")
     created_at = models.DateTimeField(default=timezone.now)
 
@@ -86,8 +82,8 @@ class Like(models.Model):
 class Follow(models.Model):
     """Model for user follows."""
 
-    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="following")
-    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followers")
+    follower = models.ForeignKey('core.CustomUser', on_delete=models.CASCADE, related_name="following")
+    following = models.ForeignKey('core.CustomUser', on_delete=models.CASCADE, related_name="followers")
     created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:

@@ -47,8 +47,8 @@
                                             @{{ user.username }}
                                         </a>
                                     </h5>
-                                    {% if user.profile.bio %}
-                                        <p class="mb-0 small">{{ user.profile.bio|truncatechars:100 }}</p>
+                                    {% if user.bio %}
+                                        <p class="mb-0 small">{{ user.bio|truncatechars:100 }}</p>
                                     {% endif %}
                                 </div>
                             </div>

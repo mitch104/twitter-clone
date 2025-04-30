@@ -8,11 +8,11 @@
     <div class="col-md-3">
         <div class="card mb-4">
             <div class="card-body">
-                <h5 class="card-title">Welcome, {{ user.username }}</h5>
+                <h5 class="card-title">Welcome, {{ request.user.username }}</h5>
                 <p class="card-text">
-                    <i class="fas fa-user-friends"></i> Following: {{ user.profile.get_following_count }}<br>
-                    <i class="fas fa-users"></i> Followers: {{ user.profile.get_followers_count }}<br>
-                    <i class="fas fa-comment"></i> Tweets: {{ user.profile.get_tweets_count }}
+                    <i class="fas fa-user-friends"></i> Following: {{ request.user.get_following_count }}<br>
+                    <i class="fas fa-users"></i> Followers: {{ request.user.get_followers_count }}<br>
+                    <i class="fas fa-comment"></i> Tweets: {{ request.user.get_tweets_count }}
                 </p>
                 <div class="d-grid gap-2">
                     <a href="{% url 'profile' user.username %}" class="btn btn-primary">View Profile</a>
