@@ -95,9 +95,8 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
 
 
 class NewTweetView(LoginRequiredMixin, CreateView):
-    template_name = 'core/new_tweet.html'
     form_class = TweetForm
-    success_url = '/'
+    success_url = reverse_lazy('home')
 
     def form_valid(self, form: TweetForm) -> HttpResponse:
         form.instance.user = self.request.user

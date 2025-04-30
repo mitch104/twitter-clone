@@ -28,6 +28,11 @@
                 <form method="POST" enctype="multipart/form-data" action="{% url 'new_tweet' %}">
                     {% csrf_token %}
                     {{ form|crispy }}
+                    <div class="d-flex justify-content-end mt-2">
+                        <small class="text-muted">
+                            <span id="char-count">0</span>/280
+                        </small>
+                    </div>
                     <button type="submit" class="btn btn-primary">Tweet</button>
                 </form>
             </div>
@@ -54,4 +59,19 @@
         {% endif %}
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.querySelector('textarea[name="content"]');
+    const charCount = document.getElementById('char-count');
+
+    function updateCharCount() {
+        charCount.textContent = textarea.value.length;
+    }
+
+    textarea.addEventListener('input', updateCharCount);
+    // For initial count
+    updateCharCount();
+});
+</script>
 {% endblock %}
