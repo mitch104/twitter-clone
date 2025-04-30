@@ -140,7 +140,9 @@ class RetweetView(LoginRequiredMixin, View):
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         original_tweet = get_object_or_404(Tweet, pk=kwargs["tweet_id"])
         retweet, created = Tweet.objects.get_or_create(
-            user=request.user, content=original_tweet.content, parent=original_tweet, image=original_tweet.image
+            user=request.user,
+            parent=original_tweet,
+            defaults={"content": original_tweet.content, "image": original_tweet.image},
         )
         if not created:
             retweet.delete()

@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:14.11
@@ -55,7 +53,7 @@ services:
 
   test:
     build: .
-    command: pytest
+    command: pytest -s
     volumes:
       - .:/app
     depends_on:
