@@ -98,3 +98,16 @@ django_debug_mode = "keep"
 addopts = "--durations=20 --import-mode=importlib"
 pythonpath = ["."]
 testpaths = ["tests"]
+env = [
+    # Database settings for testing with Docker PostgreSQL
+    "POSTGRES_DB=twitter_clone_test",
+    "POSTGRES_USER=postgres",
+    "POSTGRES_PASSWORD=postgres",
+    "POSTGRES_HOST=localhost",
+    "POSTGRES_PORT=5432",
+    # For E2E tests with playwright
+    "DJANGO_ALLOW_ASYNC_UNSAFE=true",
+    # Ensure we're in test mode
+    "DJANGO_SETTINGS_MODULE=config.settings",
+    "DEBUG=1"
+]
