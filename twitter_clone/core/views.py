@@ -46,7 +46,7 @@ class HomeView(LoginRequiredMixin, ListView):
         return Tweet.objects.filter(user__in=following).order_by('-created_at')
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
+        context: dict[str, Any] = super().get_context_data(**kwargs)
         context['form'] = TweetForm()
         return context
 
@@ -71,7 +71,7 @@ class UsersListView(LoginRequiredMixin, ListView):
         return User.objects.exclude(id=self.request.user.id).order_by('username')
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
+        context: dict[str, Any] = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             context['following'] = Follow.objects.filter(
                 follower=self.request.user
@@ -86,7 +86,7 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'tweet'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
+        context: dict[str, Any] = super().get_context_data(**kwargs)
         tweet = cast(Tweet, self.object)
         context['replies'] = Tweet.objects.filter(parent=tweet).order_by('created_at')
         return context
@@ -132,7 +132,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
     context_object_name = 'profile_user'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
+        context: dict[str, Any] = super().get_context_data(**kwargs)
         user = cast(User, self.object)
         context['tweets'] = Tweet.objects.filter(user=user).order_by('-created_at')
         context['is_following'] = Follow.objects.filter(
@@ -148,7 +148,7 @@ class EditProfileView(LoginRequiredMixin, FormView):
     success_url = '/'
 
     def get_form_kwargs(self) -> dict[str, Any]:
-        kwargs = super().get_form_kwargs()
+        kwargs: dict[str, Any] = super().get_form_kwargs()
         kwargs['instance'] = self.request.user.profile
         return kwargs
 

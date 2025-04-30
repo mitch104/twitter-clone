@@ -1,3 +1,5 @@
+from typing import Any
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -12,8 +14,8 @@ class UserRegisterForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
-    def clean(self) -> dict:
-        cleaned_data = super().clean()
+    def clean(self) -> dict[str, Any]:
+        cleaned_data: dict[str, Any] = super().clean()
         password1 = cleaned_data.get('password1')
         password2 = cleaned_data.get('password2')
         if password1 and password2 and password1 != password2:
@@ -62,7 +64,7 @@ class UserProfileUpdateForm(forms.ModelForm):
             self.fields['email'] = forms.EmailField(initial=self.instance.user.email)
 
     def save(self, commit: bool = True) -> Profile:
-        profile = super().save(commit=False)
+        profile: Profile = super().save(commit=False)
         if commit:
             profile.save()
             if 'username' in self.cleaned_data:

@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import QuerySet
 from django.utils import timezone
 
 if TYPE_CHECKING:
@@ -55,7 +56,7 @@ class Tweet(models.Model):
     def is_liked_by(self, user: User) -> bool:
         if not user.is_authenticated:
             return False
-        return Like.objects.filter(tweet=self, user=user).exists()
+        return Like.objects.filter(tweet=self, user=user).exists()  # type: ignore[no-any-return]
 
     def get_likes(self) -> "QuerySet[User]":
         return User.objects.filter(likes__tweet=self)
