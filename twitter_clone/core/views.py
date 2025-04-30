@@ -132,6 +132,8 @@ class ProfileView(LoginRequiredMixin, DetailView):
     template_name = 'core/profile.html'
     model = CustomUser
     context_object_name = 'user'
+    slug_field = 'username'
+    slug_url_kwarg = 'username'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
