@@ -1,4 +1,4 @@
-from typing import Any, TypeVar, cast
+from typing import Any, cast
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,7 +8,7 @@ from django.db.models import Q, QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView, FormView, ListView
+from django.views.generic import CreateView, DetailView, FormView, ListView, View
 from django.views.generic.base import ContextMixin
 
 from .forms import (
@@ -17,8 +17,6 @@ from .forms import (
     UserUpdateForm,
 )
 from .models import CustomUser, Follow, Like, Tweet
-
-_T = TypeVar("_T", bound=Any)
 
 
 class RegisterView(CreateView):
@@ -122,20 +120,15 @@ class LikeTweetView(LoginRequiredMixin, TweetContextMixin, DetailView):
         return super().get(request, *args, **kwargs)
 
 
-class RetweetView(LoginRequiredMixin, TweetContextMixin, DetailView):
-    model = Tweet
-    template_name = "core/tweet_card.html"
-    slug_field = "id"
-    slug_url_kwarg = "tweet_id"
-
-    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        original_tweet = self.get_object()
+class RetweetView(LoginRequiredMixin, View):
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        original_tweet = get_object_or_404(Tweet, pk=kwargs["tweet_id"])
         retweet, created = Tweet.objects.get_or_create(
             user=request.user, content=original_tweet.content, parent=original_tweet, image=original_tweet.image
         )
         if not created:
             retweet.delete()
-        return super().get(request, *args, **kwargs)
+        return redirect(request.META.get("HTTP_REFERER", reverse_lazy("home")))
 
 
 class ProfileView(LoginRequiredMixin, TweetContextMixin, DetailView):

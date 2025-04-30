@@ -43,14 +43,13 @@
         {% endif %}
 
         <div class="mt-3 tweet-actions">
-            <button class="btn btn-sm btn-outline-success retweet-btn {% if tweet.id in retweeted_tweets %}active{% endif %}"
-                    hx-get="{% url 'retweet' tweet.id %}"
-                    hx-target="#tweet-card-{{ tweet.id }}"
-                    hx-swap="outerHTML"
-                    hx-indicator=".htmx-indicator">
-                <i class="fas fa-retweet"></i>
-                <span class="retweet-count">{{ tweet.get_retweets_count }}</span>
-            </button>
+            <form method="post" action="{% url 'retweet' tweet.id %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-success retweet-btn {% if tweet.id in retweeted_tweets %}active{% endif %}">
+                    <i class="fas fa-retweet"></i>
+                    <span class="retweet-count">{{ tweet.get_retweets_count }}</span>
+                </button>
+            </form>
 
             <button class="btn btn-sm btn-outline-danger like-btn {% if tweet.id in liked_tweets %}active{% endif %}"
                     hx-get="{% url 'like_tweet' tweet.id %}"
