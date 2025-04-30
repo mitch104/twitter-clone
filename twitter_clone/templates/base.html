@@ -11,6 +11,21 @@
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/loading-states.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/remove-me.js"></script>
+    <style>
+        .htmx-indicator {
+            opacity: 0;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .htmx-request .htmx-indicator {
+            opacity: 1;
+            position: static;
+            transform: none;
+            text-align: center;
+            width: 100%;
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>

@@ -1,60 +1,50 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block title %}Home | Twitter Clone{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-3">
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Welcome, {{ request.user.username }}</h5>
-                <p class="card-text">
-                    <i class="fas fa-user-friends"></i> Following: {{ request.user.get_following_count }}<br>
-                    <i class="fas fa-users"></i> Followers: {{ request.user.get_followers_count }}<br>
-                    <i class="fas fa-comment"></i> Tweets: {{ request.user.get_tweets_count }}
-                </p>
-                <div class="d-grid gap-2">
-                    <a href="{% url 'profile' user.username %}" class="btn btn-primary">View Profile</a>
-                    <a href="{% url 'users_list' %}" class="btn btn-outline-info">Find People to Follow</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Create a new tweet</h5>
-                <form method="POST" enctype="multipart/form-data" action="{% url 'new_tweet' %}">
-                    {% csrf_token %}
-                    {{ form|crispy }}
-                    <div class="d-flex justify-content-end mt-2">
-                        <small class="text-muted">
-                            <span id="char-count">0</span>/280
-                        </small>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Tweet</button>
-                </form>
-            </div>
-        </div>
-        <h4>Timeline</h4>
-        {% if tweets %}
-            {% for tweet in tweets %}
-                {% include 'core/tweet_card.html' with tweet=tweet %}
-            {% endfor %}
-        {% else %}
-            <div class="card">
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card mb-4">
                 <div class="card-body">
-                    <p class="card-text text-center">
-                        No tweets to display. Follow some users to see their tweets, or post your own!
+                    <h5 class="card-title">Welcome, {{ request.user.username }}</h5>
+                    <p class="card-text">
+                        <i class="fas fa-user-friends"></i> Following: {{ request.user.get_following_count }}<br>
+                        <i class="fas fa-users"></i> Followers: {{ request.user.get_followers_count }}<br>
+                        <i class="fas fa-comment"></i> Tweets: {{ request.user.get_tweets_count }}
                     </p>
-                    <div class="text-center">
-                        <a href="{% url 'users_list' %}" class="btn btn-primary">Find People to Follow</a>
-                        <a href="{% url 'explore' %}" class="btn btn-outline-primary">Explore Tweets</a>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'profile' user.username %}" class="btn btn-primary">View Profile</a>
+                        <a href="{% url 'users_list' %}" class="btn btn-outline-info">Find People to Follow</a>
                     </div>
                 </div>
             </div>
-        {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Create a new tweet</h5>
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'new_tweet' %}">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-flex justify-content-end mt-2">
+                            <small class="text-muted">
+                                <span id="char-count">0</span>/280
+                            </small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Tweet</button>
+                    </form>
+                </div>
+            </div>
+            <h4>Timeline</h4>
+            <div id="tweets-container">
+                {% include "core/timeline.html" %}
+            </div>
+        </div>
     </div>
 </div>
 
@@ -63,13 +53,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const textarea = document.querySelector('textarea[name="content"]');
     const charCount = document.getElementById('char-count');
 
-    function updateCharCount() {
-        charCount.textContent = textarea.value.length;
-    }
+    textarea.addEventListener('input', function() {
+        const remaining = 280 - this.value.length;
+        charCount.textContent = remaining;
 
-    textarea.addEventListener('input', updateCharCount);
-    // For initial count
-    updateCharCount();
+        if (remaining < 50) {
+            charCount.classList.add('text-warning');
+        } else {
+            charCount.classList.remove('text-warning');
+        }
+
+        if (remaining < 0) {
+            charCount.classList.add('text-danger');
+        } else {
+            charCount.classList.remove('text-danger');
+        }
+    });
 });
 </script>
 {% endblock %}
