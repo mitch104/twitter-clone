@@ -8,12 +8,7 @@ from django.db.models import Q, QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import (
-    CreateView,
-    DetailView,
-    FormView,
-    ListView,
-)
+from django.views.generic import CreateView, DetailView, FormView, ListView
 
 from .forms import (
     TweetForm,
@@ -74,9 +69,7 @@ class UsersListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            context["following"] = Follow.objects.filter(follower=self.request.user).values_list(
-                "following_id", flat=True
-            )
+            context["following"] = self.request.user.following.values_list("following_id", flat=True)
         context["search_query"] = self.request.GET.get("search", "")
         return context
 
@@ -89,7 +82,9 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
         tweet = cast(Tweet, self.object)
-        context["replies"] = Tweet.objects.filter(parent=tweet).order_by("created_at")
+        context["retweets"] = Tweet.objects.filter(parent=tweet).order_by("-created_at")
+        context["liked_tweets"] = self.request.user.likes.values_list("tweet_id", flat=True)
+        context["retweeted_tweets"] = context["retweets"].filter(user=self.request.user).values_list("id", flat=True)
         return context
 
 
@@ -104,23 +99,50 @@ class NewTweetView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return kwargs
 
 
-class LikeTweetView(LoginRequiredMixin, FormView):
-    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        tweet = get_object_or_404(Tweet, pk=kwargs["pk"])
+class LikeTweetView(LoginRequiredMixin, DetailView):
+    model = Tweet
+    template_name = "core/tweet_card.html"
+    slug_field = "id"
+    slug_url_kwarg = "tweet_id"
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        tweet = self.get_object()
         like, created = Like.objects.get_or_create(user=request.user, tweet=tweet)
         if not created:
             like.delete()
-        return redirect("tweet_detail", pk=tweet.pk)
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context: dict[str, Any] = super().get_context_data(**kwargs)
+        context["liked_tweets"] = self.request.user.likes.values_list("tweet_id", flat=True)
+        context["retweeted_tweets"] = Tweet.objects.filter(parent__isnull=False, user=self.request.user).values_list(
+            "parent_id", flat=True
+        )
+        return context
 
 
-class RetweetView(LoginRequiredMixin, FormView):
-    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        original_tweet = get_object_or_404(Tweet, pk=kwargs["pk"])
-        retweet = Tweet.objects.create(user=request.user, content=original_tweet.content, parent=original_tweet)
-        if original_tweet.image:
-            retweet.image = original_tweet.image
-            retweet.save()
-        return redirect("tweet_detail", pk=retweet.pk)
+class RetweetView(LoginRequiredMixin, DetailView):
+    model = Tweet
+    template_name = "core/tweet_card.html"
+    slug_field = "id"
+    slug_url_kwarg = "tweet_id"
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        original_tweet = self.get_object()
+        retweet, created = Tweet.objects.get_or_create(
+            user=request.user, content=original_tweet.content, parent=original_tweet, image=original_tweet.image
+        )
+        if not created:
+            retweet.delete()
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context: dict[str, Any] = super().get_context_data(**kwargs)
+        context["liked_tweets"] = self.request.user.likes.values_list("tweet_id", flat=True)
+        context["retweeted_tweets"] = Tweet.objects.filter(parent__isnull=False, user=self.request.user).values_list(
+            "parent_id", flat=True
+        )
+        return context
 
 
 class ProfileView(LoginRequiredMixin, DetailView):
@@ -133,6 +155,10 @@ class ProfileView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)
         context["is_following"] = self.object.is_followed_by(self.request.user)
+        context["liked_tweets"] = self.request.user.likes.values_list("tweet_id", flat=True)
+        context["retweeted_tweets"] = Tweet.objects.filter(parent__isnull=False, user=self.request.user).values_list(
+            "parent_id", flat=True
+        )
         return context
 
 

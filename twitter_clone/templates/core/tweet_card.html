@@ -1,5 +1,5 @@
 {% load static %}
-<div class="card mb-3 tweet-card" data-tweet-id="{{ tweet.id }}">
+<div id="tweet-card-{{ tweet.id }}" class="card mb-3 tweet-card" data-tweet-id="{{ tweet.id }}">
     <div class="card-body">
         {% if tweet.is_retweet %}
             <div class="retweet-info mb-2">
@@ -45,7 +45,7 @@
         <div class="mt-3 tweet-actions">
             <button class="btn btn-sm btn-outline-success retweet-btn {% if tweet.id in retweeted_tweets %}active{% endif %}"
                     hx-get="{% url 'retweet' tweet.id %}"
-                    hx-target="closest .tweet-card"
+                    hx-target="#tweet-card-{{ tweet.id }}"
                     hx-swap="outerHTML"
                     hx-indicator=".htmx-indicator">
                 <i class="fas fa-retweet"></i>
@@ -54,7 +54,7 @@
 
             <button class="btn btn-sm btn-outline-danger like-btn {% if tweet.id in liked_tweets %}active{% endif %}"
                     hx-get="{% url 'like_tweet' tweet.id %}"
-                    hx-target="closest .tweet-card"
+                    hx-target="#tweet-card-{{ tweet.id }}"
                     hx-swap="outerHTML"
                     hx-indicator=".htmx-indicator">
                 <i class="{% if tweet.id in liked_tweets %}fas{% else %}far{% endif %} fa-heart"></i>
