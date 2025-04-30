@@ -25,7 +25,7 @@
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">Create a new tweet</h5>
-                <form method="POST" enctype="multipart/form-data">
+                <form method="POST" enctype="multipart/form-data" action="{% url 'new_tweet' %}">
                     {% csrf_token %}
                     {{ form|crispy }}
                     <button type="submit" class="btn btn-primary">Tweet</button>

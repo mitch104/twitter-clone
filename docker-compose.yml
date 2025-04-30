@@ -28,7 +28,7 @@ services:
              python twitter_clone/manage.py migrate &&
              python twitter_clone/manage.py runserver 0.0.0.0:8000"
     volumes:
-      - .:/code
+      - .:/app
     ports:
       - "8000:8000"
     depends_on:

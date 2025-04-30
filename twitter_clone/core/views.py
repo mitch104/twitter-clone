@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
-from django.db.models import QuerySet
+from django.db.models import Q, QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import (
@@ -43,7 +43,9 @@ class HomeView(LoginRequiredMixin, ListView):
 
     def get_queryset(self) -> QuerySet[Tweet]:
         following = Follow.objects.filter(follower=self.request.user).values_list('following', flat=True)
-        return Tweet.objects.filter(user__in=following).order_by('-created_at')
+        return Tweet.objects.filter(
+            Q(user__in=following) | Q(user=self.request.user)
+        ).order_by('-created_at')
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context: dict[str, Any] = super().get_context_data(**kwargs)

@@ -18,8 +18,5 @@ COPY poetry.lock pyproject.toml /app/
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi
 
-# Copy project
-COPY . /app/
-
 # Run the application
 CMD ["python", "twitter_clone/manage.py", "runserver", "0.0.0.0:8000"]

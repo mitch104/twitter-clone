@@ -45,7 +45,7 @@ class Tweet(models.Model):
         return f"{self.user.username}: {self.content[:50]}"
 
     def get_likes_count(self) -> int:
-        return Like.objects.filter(tweet=self).count()
+        return self.likes.count()
 
     def get_retweets_count(self) -> int:
         return Tweet.objects.filter(parent=self).count()
@@ -56,7 +56,7 @@ class Tweet(models.Model):
     def is_liked_by(self, user: User) -> bool:
         if not user.is_authenticated:
             return False
-        return Like.objects.filter(tweet=self, user=user).exists()  # type: ignore[no-any-return]
+        return Like.objects.filter(tweet=self, user=user).exists()
 
     def get_likes(self) -> "QuerySet[User]":
         return User.objects.filter(likes__tweet=self)
