@@ -20,7 +20,7 @@
                             <div>Tweets</div>
                         </div>
                         <div>
-                            <strong id="followers-count">{{ profile_user.get_followers_count }}</strong>
+                            <strong id="followers-count" data-testid="follower-count-{{ profile_user.username }}">{{ profile_user.get_followers_count }}</strong>
                             <div>Followers</div>
                         </div>
                         <div>
@@ -30,9 +30,9 @@
                     </div>
 
                     {% if request.user.is_authenticated and request.user != profile_user %}
-                        <form method="post" action="{% url 'follow_user' profile_user.username %}">
+                        <form method="post" action="{% url 'follow_user' profile_user.username %}" hx-post="{% url 'follow_user' profile_user.username %}" hx-target="#profile-section" hx-swap="outerHTML">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-{% if is_following %}outline-{% endif %}primary w-100 mb-2">
+                            <button type="submit" class="btn btn-{% if is_following %}outline-{% endif %}primary w-100 mb-2" data-testid="follow-button-{{ profile_user.username }}">
                                 {% if is_following %}
                                     <i class="fas fa-user-minus"></i> Unfollow
                                 {% else %}

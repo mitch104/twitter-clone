@@ -52,7 +52,7 @@ class HomeView(LoginRequiredMixin, TweetContextMixin, ListView):
         return Tweet.objects.filter(Q(user__in=following) | Q(user=self.request.user)).order_by("-created_at")
 
     def get_template_names(self) -> list[str]:
-        if self.request.htmx:
+        if self.request.htmx and self.request.htmx.trigger == "tweets-container":
             return ["core/timeline.html"]
         return [self.template_name]
 
@@ -61,8 +61,7 @@ class HomeView(LoginRequiredMixin, TweetContextMixin, ListView):
         if self.request.htmx:
             time.sleep(1)
         context: dict[str, Any] = super().get_context_data(**kwargs)
-        if not self.request.htmx:
-            context["form"] = TweetForm()
+        context["form"] = TweetForm()
         return context
 
 

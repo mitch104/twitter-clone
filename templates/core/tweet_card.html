@@ -48,18 +48,20 @@
             hx-post="{% url 'retweet' tweet.id %}"
             hx-target="#main-content"
             hx-select="#main-content"
-            hx-swap="outerHTML">
+            hx-swap="outerHTML"
+            data-testid="retweet-button-{{ tweet.id }}">
                 <i class="fas fa-retweet"></i>
-                <span class="retweet-count">{{ tweet.get_retweets_count }}</span>
+                <span class="retweet-count" data-testid="retweet-count-{{ tweet.id }}">{{ tweet.get_retweets_count }}</span>
             </button>
 
             <button
             class="btn btn-sm btn-outline-danger like-btn {% if tweet.id in liked_tweets %}active{% endif %}"
             hx-get="{% url 'like_tweet' tweet.id %}"
             hx-target="#tweet-card-{{ tweet.id }}"
-            hx-swap="outerHTML">
+            hx-swap="outerHTML"
+            data-testid="like-button-{{ tweet.id }}">
                 <i class="{% if tweet.id in liked_tweets %}fas{% else %}far{% endif %} fa-heart"></i>
-                <span class="like-count">{{ tweet.get_likes_count }}</span>
+                <span class="like-count" data-testid="like-count-{{ tweet.id }}">{{ tweet.get_likes_count }}</span>
             </button>
 
             <button class="btn btn-sm btn-outline-primary share-btn"
