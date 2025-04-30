@@ -8,6 +8,10 @@ version = "0.1.0"
 description = "A Twitter clone built with Django"
 authors = ["Mitchell Harle <mitch104@protonmail.com>"]
 readme = "README.md"
+packages = [
+    { include = "apps" },
+    { include = "config" },
+]
 
 [tool.poetry.dependencies]
 python = ">=3.10"
@@ -86,16 +90,11 @@ module = [
 ignore_missing_imports = true
 
 [tool.django-stubs]
-django_settings_module = "twitter_clone.twitter_clone.settings"
+django_settings_module = "config.settings"
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "twitter_clone.twitter_clone.settings"
+DJANGO_SETTINGS_MODULE = "config.settings"
 django_debug_mode = "keep"
-addopts = "--durations=20"
-testpaths = [
-    "tests",
-]
-env = [
-    # For E2E tests with playwright
-    "DJANGO_ALLOW_ASYNC_UNSAFE=true",
-]
+addopts = "--durations=20 --import-mode=importlib"
+pythonpath = ["."]
+testpaths = ["tests"]

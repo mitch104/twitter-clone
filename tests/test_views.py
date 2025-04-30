@@ -3,9 +3,8 @@ from django.http import HttpResponse
 from django.test import Client
 from django.urls import reverse
 
-from twitter_clone.core.models import Tweet
-
-from .factories import LikeFactory
+from apps.core.models import Tweet
+from tests.factories import LikeFactory
 
 
 @pytest.mark.django_db()
