@@ -29,13 +29,11 @@ class CustomUser(AbstractUser):
 class Tweet(models.Model):
     """Model for tweets."""
 
-    user = models.ForeignKey('core.CustomUser', on_delete=models.CASCADE, related_name="tweets")
+    user = models.ForeignKey("core.CustomUser", on_delete=models.CASCADE, related_name="tweets")
     content = models.TextField(max_length=280)
     image = models.ImageField(upload_to="tweet_images", blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
-    parent = models.ForeignKey(
-        "self", on_delete=models.CASCADE, blank=True, null=True, related_name="retweets"
-    )
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, blank=True, null=True, related_name="retweets")
 
     class Meta:
         ordering = ["-created_at"]
@@ -67,7 +65,7 @@ class Tweet(models.Model):
 class Like(models.Model):
     """Model for tweet likes."""
 
-    user = models.ForeignKey('core.CustomUser', on_delete=models.CASCADE, related_name="likes")
+    user = models.ForeignKey("core.CustomUser", on_delete=models.CASCADE, related_name="likes")
     tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name="likes")
     created_at = models.DateTimeField(default=timezone.now)
 
@@ -82,8 +80,8 @@ class Like(models.Model):
 class Follow(models.Model):
     """Model for user follows."""
 
-    follower = models.ForeignKey('core.CustomUser', on_delete=models.CASCADE, related_name="following")
-    following = models.ForeignKey('core.CustomUser', on_delete=models.CASCADE, related_name="followers")
+    follower = models.ForeignKey("core.CustomUser", on_delete=models.CASCADE, related_name="following")
+    following = models.ForeignKey("core.CustomUser", on_delete=models.CASCADE, related_name="followers")
     created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:

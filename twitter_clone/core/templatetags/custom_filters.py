@@ -1,9 +1,9 @@
-
 from django import template
 from django.template.defaultfilters import stringfilter
 from django.utils.safestring import mark_safe
 
 register = template.Library()
+
 
 @register.filter
 def split(value: str, arg: str) -> list[str]:
@@ -12,6 +12,7 @@ def split(value: str, arg: str) -> list[str]:
     Returns a list.
     """
     return value.split(arg)
+
 
 @register.filter
 def get_liked_tweets_list(liked: bool) -> list[int]:
@@ -22,13 +23,15 @@ def get_liked_tweets_list(liked: bool) -> list[int]:
         return [1]  # A placeholder value that will equal the tweet.id
     return []
 
+
 @register.filter
 @stringfilter
 def format_username(value: str) -> str:
     """Format username with @ symbol."""
-    return f'@{value}'
+    return f"@{value}"
+
 
 @register.filter
 def format_tweet_content(value: str) -> str:
     """Format tweet content with line breaks."""
-    return str(mark_safe(value.replace('\n', '<br>')))
+    return str(mark_safe(value.replace("\n", "<br>")))
