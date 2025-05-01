@@ -75,6 +75,24 @@ services:
     networks:
       - app-network
 
+  flower:
+    build: .
+    command: poetry run celery -A config flower --port=5555
+    volumes:
+      - .:/app
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - celery
+    env_file:
+      - ./.env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - app-network
+
   mailhog:
     image: mailhog/mailhog
     ports:

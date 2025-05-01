@@ -18,6 +18,7 @@ from .forms import (
     UserUpdateForm,
 )
 from .models import CustomUser, Follow, Like, Tweet
+from .tasks import send_retweet_notification
 
 
 class RegisterView(CreateView):
@@ -58,7 +59,7 @@ class HomeView(LoginRequiredMixin, TweetContextMixin, ListView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         # Just to make infinite scrolling show spinner to make it more obvious
-        if self.request.htmx:
+        if self.request.htmx and self.request.htmx.trigger == "tweets-container":
             time.sleep(1)
         context: dict[str, Any] = super().get_context_data(**kwargs)
         context["form"] = TweetForm()
@@ -143,7 +144,9 @@ class RetweetView(LoginRequiredMixin, View):
             parent=original_tweet,
             defaults={"content": original_tweet.content, "image": original_tweet.image},
         )
-        if not created:
+        if created:
+            send_retweet_notification.delay(tweet_id=original_tweet.id, retweeter_username=request.user.username)
+        else:
             retweet.delete()
         return redirect(request.META.get("HTTP_REFERER", reverse_lazy("home")))
 

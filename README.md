@@ -1,6 +1,6 @@
 # Twitter Clone
 
-A Twitter clone built with Django, Postgres and HTMX.
+A Twitter clone built with Django, Postgres, HTMX, Celery, Redis and Docker.
 
 ## Features
 

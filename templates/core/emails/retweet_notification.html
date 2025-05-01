@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .tweet {
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            background-color: #f8f9fa;
+        }
+        .notification {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .tweet-content {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .link {
+            color: #1da1f2;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="notification">
+            <strong>{{ retweeter_username }}</strong> retweeted your tweet!
+        </div>
+
+        <div class="tweet">
+            <div class="tweet-content">
+                {{ tweet.content }}
+            </div>
+            <div style="color: #657786; font-size: 14px;">
+                Originally posted on {{ tweet.created_at|date:"F j, Y" }}
+            </div>
+        </div>
+
+        <p>
+            View your tweet <a href="{{ request.scheme }}://localhost:8000/{% url 'tweet_detail' tweet.id %}" class="link">here</a>.
+        </p>
+    </div>
+</body>
+</html>
