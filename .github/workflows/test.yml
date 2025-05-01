@@ -65,4 +65,6 @@ jobs:
         DJANGO_SETTINGS_MODULE: config.settings
         DEBUG: 1
         DJANGO_ALLOW_ASYNC_UNSAFE: true
+        CELERY_TASK_ALWAYS_EAGER: true
+        CELERY_TASK_EAGER_PROPAGATES: true
       run: make test
