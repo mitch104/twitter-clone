@@ -26,6 +26,9 @@ celery = "^5.5.2"
 redis = "^5.3.0"
 django-celery-results = "^2.5.1"
 flower = "^2.0.1"
+djangorestframework = "^3.16.0"
+drf-spectacular = "^0.28.0"
+djangorestframework-api-key = "^3.1.0"
 
 [tool.poetry.group.dev.dependencies]
 django-stubs = "^5.2.0"

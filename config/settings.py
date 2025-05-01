@@ -34,6 +34,9 @@ INSTALLED_APPS = [
     "django_htmx",
     "apps.core",
     "django_celery_results",
+    "rest_framework",
+    "drf_spectacular",
+    "rest_framework_api_key",
 ]
 
 MIDDLEWARE = [
@@ -194,4 +197,27 @@ LOGGING = {
             "propagate": False,
         },
     },
+}
+
+# Django REST Framework settings
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework_api_key.authentication.APIKeyAuthentication",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+# drf-spectacular settings
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Twitter Clone API",
+    "DESCRIPTION": "API for the Twitter Clone application",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
