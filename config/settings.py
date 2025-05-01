@@ -182,11 +182,6 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
-        "file": {
-            "class": "logging.FileHandler",
-            "filename": BASE_DIR / "logs/twitter_clone.log",
-            "formatter": "verbose",
-        },
     },
     "loggers": {
         "": {  # Root logger
@@ -194,7 +189,7 @@ LOGGING = {
             "level": "INFO",
         },
         "apps.core": {  # App-specific logger
-            "handlers": ["console", "file"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": False,
         },
