@@ -1,3 +1,7 @@
+setup-tests:
+	playwright install
+	playwright install-deps
+
 # Run all tests
 test:
 	export $$(cat .env.test | xargs) && pytest

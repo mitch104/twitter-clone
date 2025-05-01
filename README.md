@@ -1,6 +1,6 @@
 # Twitter Clone
 
-A Twitter clone built with Django, featuring real-time interactions using HTMX.
+A Twitter clone built with Django, Postgres and HTMX.
 
 ## Features
 
@@ -44,6 +44,23 @@ A Twitter clone built with Django, featuring real-time interactions using HTMX.
    ```
 
 5. Access the application at `http://localhost:8000`
+
+### Testing
+
+Testing requires Playwright, install with:
+```bash
+make setup-tests
+```
+
+Run unit tests and E2E tests with:
+```bash
+make test
+```
+
+To run Playwright tests in headed mode so you can see them execute run:
+```bash
+make test-e2e
+```
 
 ## Code Quality Tools
 
