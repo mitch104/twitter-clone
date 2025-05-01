@@ -47,6 +47,9 @@ jobs:
         path: .venv
         key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
 
+    - name: Install dependencies
+      run: poetry install
+
     - name: Setup test environment
       run: make setup-tests
 
