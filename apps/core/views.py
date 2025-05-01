@@ -1,7 +1,7 @@
+import logging
 import time
 from typing import Any, cast
 
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
@@ -20,15 +20,18 @@ from .forms import (
 from .models import CustomUser, Follow, Like, Tweet
 from .tasks import send_retweet_notification
 
+logger = logging.getLogger(__name__)
 
-class RegisterView(CreateView):
+
+class RegisterView(SuccessMessageMixin, CreateView):
     form_class = UserRegisterForm
     template_name = "core/register.html"
     success_url = reverse_lazy("login")
+    success_message = "Account created! You can now log in"
 
     def form_valid(self, form: UserRegisterForm) -> HttpResponse:
         response = super().form_valid(form)
-        messages.success(self.request, f'Account created for {form.cleaned_data.get("username")}! You can now log in')
+        logger.info(f"New user registered: {form.cleaned_data['username']}")
         return response
 
 
@@ -121,6 +124,11 @@ class NewTweetView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         kwargs["user"] = self.request.user
         return kwargs
 
+    def form_valid(self, form: TweetForm) -> HttpResponse:
+        response = super().form_valid(form)
+        logger.info(f"New tweet created by {self.request.user.username}")
+        return response
+
 
 class LikeTweetView(LoginRequiredMixin, TweetContextMixin, DetailView):
     model = Tweet
@@ -131,6 +139,8 @@ class LikeTweetView(LoginRequiredMixin, TweetContextMixin, DetailView):
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         tweet = self.get_object()
         like, created = Like.objects.get_or_create(user=request.user, tweet=tweet)
+        action = "liked" if created else "unliked"
+        logger.info(f"User {request.user.username} {action} tweet {tweet.id}")
         if not created:
             like.delete()
         return super().get(request, *args, **kwargs)
@@ -145,8 +155,13 @@ class RetweetView(LoginRequiredMixin, View):
             defaults={"content": original_tweet.content, "image": original_tweet.image},
         )
         if created:
+            logger.info(
+                f"User {request.user.username} retweeted tweet {original_tweet.id} "
+                f"from {original_tweet.user.username}"
+            )
             send_retweet_notification.delay(tweet_id=original_tweet.id, retweeter_username=request.user.username)
         else:
+            logger.info(f"User {request.user.username} un-retweeted tweet {original_tweet.id}")
             retweet.delete()
         return redirect(request.META.get("HTTP_REFERER", reverse_lazy("home")))
 
@@ -174,14 +189,22 @@ class EditProfileView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     def get_object(self, queryset: QuerySet[CustomUser] | None = None) -> CustomUser:
         return cast(CustomUser, self.request.user)
 
+    def form_valid(self, form: UserUpdateForm) -> HttpResponse:
+        response = super().form_valid(form)
+        logger.info(f"User {self.request.user.username} updated their profile")
+        return response
+
 
 class FollowUserView(LoginRequiredMixin, FormView):
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         user_to_follow = get_object_or_404(CustomUser, username=kwargs["username"])
         if user_to_follow == request.user:
+            logger.warning(f"User {request.user.username} attempted to follow themselves")
             raise PermissionDenied("You cannot follow yourself.")
 
         follow, created = Follow.objects.get_or_create(follower=request.user, following=user_to_follow)
+        action = "followed" if created else "unfollowed"
+        logger.info(f"User {request.user.username} {action} user {user_to_follow.username}")
         if not created:
             follow.delete()
 

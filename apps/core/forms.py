@@ -26,7 +26,9 @@ class UserUpdateForm(forms.ModelForm):
 
 class TweetForm(forms.ModelForm):
     content = forms.CharField(
-        label="", widget=forms.Textarea(attrs={"rows": 3, "placeholder": "What's happening?"}), max_length=280
+        label="",
+        widget=forms.Textarea(attrs={"rows": 3, "placeholder": "What's happening?"}),
+        max_length=280,
     )
     image = forms.ImageField(required=False)
 
