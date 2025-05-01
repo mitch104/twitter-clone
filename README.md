@@ -8,12 +8,12 @@ A Twitter clone built with Django, featuring real-time interactions using HTMX.
 - Tweet creation with text and images
 - Like and retweet functionality
 - User following system
-- Real-time updates using HTMX
 - Responsive design with Bootstrap 5
+- Infinite scrolling feed with HTMX
 
 ## Prerequisites
 
-- Python 3.11+
+- Python 3.10+
 - Poetry
 - Docker and Docker Compose
 
@@ -22,7 +22,6 @@ A Twitter clone built with Django, featuring real-time interactions using HTMX.
 1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/twitter-clone.git
-   cd twitter-clone
    ```
 
 2. Install dependencies using Poetry:
@@ -32,9 +31,6 @@ A Twitter clone built with Django, featuring real-time interactions using HTMX.
 
 3. Set up pre-commit hooks:
    ```bash
-   # Install pre-commit
-   poetry add --group dev pre-commit
-
    # Install the git hooks
    pre-commit install
 
@@ -42,22 +38,12 @@ A Twitter clone built with Django, featuring real-time interactions using HTMX.
    pre-commit run --all-files
    ```
 
-4. Create a `.env` file in the project root:
-   ```env
-   DEBUG=1
-   SECRET_KEY=your-secret-key
-   DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-   POSTGRES_DB=twitter_clone
-   POSTGRES_USER=postgres
-   POSTGRES_PASSWORD=postgres
-   ```
-
-5. Start the development environment:
+4. Start the development environment:
    ```bash
    docker-compose up --build
    ```
 
-6. Access the application at `http://localhost:8000`
+5. Access the application at `http://localhost:8000`
 
 ## Code Quality Tools
 
@@ -66,15 +52,4 @@ This project uses several tools to maintain code quality:
 - **Ruff**: For linting and code formatting
 - **Mypy**: For static type checking
 - **Pre-commit**: For running checks before commits
-
-### Pre-commit Hooks
-
-Install pre-commit:
-```bash
-pre-commit install
-```
-
-The following checks are run automatically before each commit:
-```bash
-pre-commit run --all-files
-```
+- **Playwright**: For automated E2E testing
