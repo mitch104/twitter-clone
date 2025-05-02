@@ -2,13 +2,14 @@ import logging
 import time
 from typing import Any, cast
 
+from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q, QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView, View
 from django.views.generic.base import ContextMixin
 
@@ -136,7 +137,7 @@ class LikeTweetView(LoginRequiredMixin, TweetContextMixin, DetailView):
     slug_field = "id"
     slug_url_kwarg = "tweet_id"
 
-    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+    def get(self, request: HttpRequest, *args: tuple, **kwargs: dict) -> HttpResponse:
         tweet = self.get_object()
         like, created = Like.objects.get_or_create(user=request.user, tweet=tweet)
         action = "liked" if created else "unliked"
@@ -209,3 +210,9 @@ class FollowUserView(LoginRequiredMixin, FormView):
             follow.delete()
 
         return redirect(request.META.get("HTTP_REFERER", reverse_lazy("home")))
+
+
+class CustomLogoutView(View):
+    def get(self, request: HttpRequest, *args: tuple, **kwargs: dict) -> HttpResponse:
+        logout(request)
+        return redirect(reverse("login"))
