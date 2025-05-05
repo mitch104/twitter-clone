@@ -3,12 +3,14 @@ services:
     image: postgres:14.11
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    env_file:
-      - ./.env
     environment:
+      - DEBUG=1
+      - DJANGO_ALLOWED_HOSTS=*
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/twitter_clone
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=twitter_clone
+
     ports:
       - "5432:5432"
     networks:
@@ -46,8 +48,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    env_file:
-      - ./.env
     environment:
       - EMAIL_HOST=mailhog
       - EMAIL_PORT=1025
@@ -67,8 +67,6 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-    env_file:
-      - ./.env
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -85,8 +83,6 @@ services:
     depends_on:
       - redis
       - celery
-    env_file:
-      - ./.env
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0

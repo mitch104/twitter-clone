@@ -38,14 +38,20 @@ A Twitter clone built with Django, Postgres, HTMX, Celery, Redis and Docker.
    pre-commit run --all-files
    ```
 
-4. Start the development environment:
+4. Build the development environment for the first time:
    ```bash
-   docker-compose up --build
+   make build
    ```
 
-5. Access the application at `http://localhost:8000`
+5. Start the development environment:
+   ```bash
+   make start
+   ```
+
+6. Access the application at `http://localhost:8000`
 
 ### Testing
+Make sure the development environment is running with `make start`, tests use the postgres DB.
 
 Testing requires Playwright, install with:
 ```bash
