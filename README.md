@@ -1,6 +1,7 @@
 # Twitter Clone
 
 A Twitter clone built with Django, Postgres, HTMX, Celery, Redis and Docker.
+It's development was performed with Cursor as discussed in this [blog post](https://www.mitchell-harle.dev/twitter-clone/).
 
 ## Features
 
